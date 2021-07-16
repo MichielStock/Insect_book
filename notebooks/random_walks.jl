@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.14.5
+# v0.14.7
 
 using Markdown
 using InteractiveUtils
@@ -58,7 +58,7 @@ function randomwalk1D(nsteps)
 end
 
 # ╔═╡ b92228d5-15b9-40e8-99c9-e7cb3e17ecc4
-nsteps = 1000000
+nsteps = 100000
 
 # ╔═╡ f0333ec9-fd6b-43d6-8666-1cde329745c9
 tsteps = 1:nsteps
