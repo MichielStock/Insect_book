@@ -18,42 +18,116 @@ using Plots, PlutoUI
 
 # ╔═╡ c71870a1-7f19-4834-8d2b-5256ebd1827a
 md"""
+# Caterpillar growth: the logistic map
+
 In this chapter, we study the growth of a population of caterpillars (🐛). Catepillars are a common pest in gardens, for example the Box tree moth (*Cydalima perspectalis*) is an invasive species in Europe, destroying many valuable buxus shubberies. 
 
 ![Plant damage by catepillars, the larval stage of the Box tree moth.](https://upload.wikimedia.org/wikipedia/commons/9/95/Box_tree_moth_larval_feeding_damage.jpg)
 
+- need for mathematical modelling: predict how a population can evolve
+- $x_{(0)}, x_{(1)}, x_{(2)},\ldots, x_{(t-1)}, x_{(t)}$
+- work with $x_{(t)} = f(x_{(t-1)})$
+   - assumptions: perfectly deterministic
+   - population is large enough that we can describe it with real numbers, assume parts of catepillars are possible
+- we first look at unbounded growth, than we will introduce a carrying capacity limiting the resources
+- this simple model has many behaviours
+  - population growth
+  - occilations
+  - extinction
+  - chaos
 
+"""
+
+# ╔═╡ 9dcbdc31-cbf7-43f4-9b28-759c98d406e1
+md"""
+## Unbounded growth
+
+Many insects want to create as much progenity as possible, increasing their population at the expense of the resources. If we assume that every catepillar has, on average, a fixed number of descendents, we can write down the following rule:
+
+$$x_{(t)} = rx_{(t-1)}$$
+
+We can implement this simple rule, keeping $r$ as a keyword argument we determine later.
+
+"""
+
+# ╔═╡ 33a5e2e3-3fa5-4357-b713-5b228424a455
+m(xₜ; r) = r * xₜ
+
+# ╔═╡ 09d20f2d-417e-4673-b861-185387789f7d
+md"""
+Here, $r>0$ is the *growth paramaters*, quantifying the number of ofspring per individual per generation. Remember, we work with averages so non-integers such as 0.3 or 3.2 are allowed. This number has to be positive howevers, since one cannot have a negative number of descendents.
+
+We can already ponder on how $r$ might influence the population:
+- If $r<1$, every insect gives rise to less then one individual in each generation. He1nce, the next generation with have fewer individuals than the last. Over time, the population will die out!
+- If $r>1$, every insect will produce more than one new indidual for the next generation. The population will increase as time moves forward.
+- In the edge case when $r=1$ the population is perfectly stable and will remain of constant size in time.
+
+Since we are modelling a pest, we likely have $r>1$. Let us pick a $r=1.8$, each catepillar has a little bit less than two children surviving to the next generation.
 """
 
 # ╔═╡ a1d12301-0530-4a3f-81f9-7674ffab8164
 r = 1.8
 
-# ╔═╡ 33a5e2e3-3fa5-4357-b713-5b228424a455
-m(x; r=r) = r * x
+# ╔═╡ f39849c0-8883-45e5-83e4-ada04b739da2
+md"All left to do is to pick a $x_{(0)}$, the initial population size at $t=0$. Let start with a modest population of five bugs."
 
 # ╔═╡ ad631db2-0461-45f5-8e8f-390742391238
 🐛₀ = 5
 
+# ╔═╡ 34324295-fd44-4b96-88f9-6a6ea566ec2c
+md"Now to apply the rule. This is the size of the population in the next generation:"
+
 # ╔═╡ 2a9c8480-b833-4437-a05c-259e08ba435d
-m(🐛₀)
+m(🐛₀;r)
+
+# ╔═╡ 5d7adeb1-ef91-474a-a8bd-d61c200b2bf4
+md"To know the population size at $t=2$, we apply this twice:"
 
 # ╔═╡ bab46d0d-f536-475f-9989-09eacf3a0962
-m(m(🐛₀))
+m(m(🐛₀;r);r)
+
+# ╔═╡ fd827f67-4928-45b9-97f6-40a08fa20d45
+md"Three times for the third generation..."
 
 # ╔═╡ 82718529-4dde-4ba1-bc22-85de90bfe57a
-m(m(m(🐛₀)))
+m(m(m(🐛₀;r);r);r)
+
+# ╔═╡ df663a13-4a73-425e-a715-8cc4e6f25b4e
+md"And so on."
 
 # ╔═╡ 30d30de3-5258-4634-9d59-07924f053815
-m(m(m(m(🐛₀))))
+m(m(m(m(🐛₀;r);r);r);r)
+
+# ╔═╡ 77b746ee-1e9d-40d0-884a-b121c2adc817
+md"Luckily for us, there is an easy way to compute the population size at any time. One can show using induction that the population size is given by
+
+$$x_{(0)}r^t \qquad t=0, 1, 2, \ldots$$
+
+This is an exponential function, hence why this type of growth is called *exponential growth*.
+
+> Exponential growth is often given by the formulla $x_{(0)}e^{at}$ with $a$ a parameter determinded on $r$. Can you provide $a$ as a function of $r$?
+"
 
 # ╔═╡ 88165f3f-b68a-4d93-9917-2e58a418a6aa
-pop_exp(x₀, t; r=r) = x₀ * r^t
+pop_exp(x₀, t; r) = x₀ * r^t
+
+# ╔═╡ ba6abe8b-d2dc-49ca-8cef-051008310cbc
+md"We obtain the same result as before."
 
 # ╔═╡ c65fcc42-ead4-472b-90c8-18296f2ce31a
-pop_exp.(🐛₀, 0:4)
+pop_exp.(🐛₀, 0:4; r)
+
+# ╔═╡ 1ee88f3d-61c4-4182-bb0c-beeba6e78460
+md"Let us plot the first ten generations."
+
+# ╔═╡ 6c907367-14c6-4e16-91fb-0eccfa84db09
+scatter(0:10, pop_exp.(🐛₀, 0:10; r), label="number of caterpillars", title="exponential growth", xlabel="generation", legend=:topleft)
+
+# ╔═╡ 1eb01190-98b8-4101-b97e-accc384ad93f
+md"A worrying increase of the pest! What happens after an even longer time?"
 
 # ╔═╡ c5cb9c83-5ba3-40b7-9729-7353ba2bc7ce
-scatter(0:50, pop_exp.(🐛₀, 0:50), label="number of caterpillars", title="exponential growth", xlabel="generation")
+scatter(0:50, pop_exp.(🐛₀, 0:50; r), label="number of caterpillars", title="exponential growth", xlabel="generation", legend=:topleft)
 
 # ╔═╡ eedbc750-5123-4f3c-92dd-a9e438c22343
 md"""
@@ -63,7 +137,7 @@ $$x_{(t)} = r\left(1-\frac{x_{(t-1)}}{K}\right)x_{(t-1)}\,.$$
 
 The new term says that the growth is less rapid when the population is closer to the carrying capacity.
 
-Mathematicians often use the symbol $\sigma$ ("sigma") as a shorthand notation for the logistic map.
+Mathematicians often use the symbol $\sigma$ (pronounced as "sigma") as a shorthand notation for the logistic map.
 """
 
 # ╔═╡ 60f9b0c3-8c35-4729-929c-003e6f2251af
@@ -84,13 +158,43 @@ function pop_logistic(x₀, ngenerations; r=r, K=K)
 end
 
 # ╔═╡ 841299c0-ab9b-4c1c-b741-8c10379aa157
-equilibrium_logistic(;r, K) = K * (r - 1) / r
+equilibrium_logistic(;r, K) = r > 1 ? K * (r - 1) / r : 0.0
+
+# ╔═╡ 104a006f-2314-455f-bd33-dc766e7dcb63
+function plot_populations(x₀s, ngenerations=50; r, K)
+	p = plot(title="logistic growth\nr=$r, K=$K", xlabel="generation",
+			legend = :outertop)
+	for x₀ in x₀s
+		scatter!(p, 0:ngenerations, pop_logistic(x₀, ngenerations; r, K),
+					label="population starting with $x₀ individuals")
+	end
+	hline!([K], label="carrying capacity")
+	x_eq = equilibrium_logistic(;r, K)
+	hline!([x_eq], label="equilibrium population")
+end
+
+# ╔═╡ b76985ac-b95c-4fb1-a490-2c28d3e09341
+function plot_logistic(r, K; show_spiderweb=false)
+	p = plot(x->σ(x,r=r,K=K), 0, K, label="logistic map", xlabel="x(t-1)", ylabel="x(t)", ylims=[0, 1.5σ(K/2; K, r)],
+	title="r=$r, K=$K")
+	plot!(identity, 0, K, label="first bissector")
+	x_eq = equilibrium_logistic(;r, K)
+	scatter!([x_eq], [x_eq], label="equilibrium point")
+	populations_logistic = pop_logistic(🐛₀, 50; r, K)
+	if show_spiderweb
+		for t in 1:length(populations_logistic)-1
+			xₜ, xₜ₊₁ = populations_logistic[t], populations_logistic[t+1]
+			plot!([xₜ, xₜ, xₜ₊₁], [xₜ, xₜ₊₁, xₜ₊₁], color="red", label="")
+		end
+	end
+	p
+end
 
 # ╔═╡ 2658f6d7-7dd2-4ba8-a01b-684fe05558fd
 @bind r′ Slider(0:0.01:4, default=3.6, show_value=true)
 
 # ╔═╡ 1818e73f-6fd6-4184-ae7b-f6c62560ccf2
-function longterm_pop(x₀, ngenerations=100; r, K)
+function longterm_pop(x₀, ngenerations=1000; r, K)
 	xₜ = x₀
 	for t in 1:ngenerations
 		xₜ = σ(xₜ; r, K)
@@ -105,10 +209,13 @@ r_values = 0:0.01:4
 show_r = false
 
 # ╔═╡ 51ca9a9d-d156-4e63-bff8-cede97268d3e
-K = 1000
+K = 1_000
 
 # ╔═╡ 285c19e9-8277-4bef-be13-e073922b09c1
-md"Oh no! It seems that the population increases without bound. In practice however, the caterpillars would eat all the available plants long before they could reach such large populations. An ecosystem can only support a limited number of individuals, determined by the amount of food, water, space etc that is available. The maximal number that can be supported is called the *carrying capacity* of the system and is often denoted with the letter $K$. Let us set $K$=$K for this chapter, meaning that our garden has enough p[lants to keep $K caterpillars fed."
+md"Oh no! It seems that the population increases without bound. If we assume that a single caterpillar weights about 3 grams, than after 50 generations we have about $(3*pop_exp(🐛₀, 50;r)/1000_000) metric tonnes of bugs. That is the same weight as 40 milion hippopotamuses! Caterpillars are called eating machines but an average garden does not nearly contain enough plants to reach such populations.
+
+
+In practice however, the caterpillars would eat all the available plants long before they could reach such large populations. An ecosystem can only support a limited number of individuals, determined by the amount of food, water, space etc that is available. The maximal number that can be supported is called the *carrying capacity* of the system and is often denoted with the letter $K$. Let us set $K$=$K for this chapter, meaning that our garden has enough plants to keep $K caterpillars fed."
 
 # ╔═╡ 1ca7d37e-3458-4a08-b36b-82e554c0bff8
 σ(🐛₀; r, K)
@@ -131,6 +238,9 @@ begin
 	hline!([K], label="carrying capacity")
 end
 
+# ╔═╡ fe5bc126-c6fd-4c08-bb3d-b336aef7f546
+plot_populations([🐛₀, 100, 500, 800]; r, K)
+
 # ╔═╡ ecba66c5-2601-4f2b-8576-eefff88799ca
 🐛eq = equilibrium_logistic(r=r, K=K)
 
@@ -142,40 +252,9 @@ $$x_\text{eq} = r\left(1-\frac{x_\text{eq}}{K}\right)x_\text{eq}\,.$$
 
 As this is only a simple quadratic equation, we can easily solve for two solutions:
 
-- $x_\text{eq}=0$ is a trivial solution. If there are no caterpillars, the population will remain empty (duh!). However, this equilibririum is *unstable* adding a single individual will kickstart the population.
-- $x_\text{eq}=K\frac{r-1}{r}$ is the second equilibrium solution we observe in the plot. This solution is stable (for the given value of $r$) as the population converges to it.
+- first, $x_\text{eq}=0$ is a trivial solution. If there are no caterpillars, the population will remain empty (duh!). However, this equilibririum is *unstable* adding a single individual will kickstart the population.
+- the second root is given by $x_\text{eq}=K\frac{r-1}{r}$, which we observe in the plot. This solution is stable (for the given value of $r$) as the population converges to it.
 """
-
-# ╔═╡ 104a006f-2314-455f-bd33-dc766e7dcb63
-function plot_populations(x₀s, ngenerations=50; r, K)
-	p = plot(title="logistic growth\nr=$r, K=$K", xlabel="generation",
-			legend = :outertop)
-	for x₀ in x₀s
-		scatter!(p, 0:ngenerations, pop_logistic(x₀, ngenerations; r, K),
-					label="population starting with $x₀ individuals")
-	end
-	hline!([K], label="carrying capacity")
-	hline!([🐛eq], label="equilibrium population")
-end
-
-# ╔═╡ fe5bc126-c6fd-4c08-bb3d-b336aef7f546
-plot_populations([🐛₀, 100, 500, 800]; r, K)
-
-# ╔═╡ b76985ac-b95c-4fb1-a490-2c28d3e09341
-function plot_logistic(r, K; show_spiderweb=false)
-	p = plot(x->σ(x,r=r,K=K), 0, K, label="logistic map", xlabel="x(t)", ylabel="x(t+1)", ylims=[0, 1.5σ(K/2; K, r)],
-	title="r=$r, K=$K")
-	plot!(identity, 0, K, label="first bissector")
-	scatter!([🐛eq], [🐛eq], label="equilibrium point")
-	populations_logistic = pop_logistic(🐛₀, 50; r, K)
-	if show_spiderweb
-		for t in 1:length(populations_logistic)-1
-			xₜ, xₜ₊₁ = populations_logistic[t], populations_logistic[t+1]
-			plot!([xₜ, xₜ, xₜ₊₁], [xₜ, xₜ₊₁, xₜ₊₁], color="red", label="")
-		end
-	end
-	p
-end
 
 # ╔═╡ bb92cc25-d16a-49c7-9dc6-40a5e1764023
 plot_logistic(r, K, show_spiderweb=true)
@@ -190,13 +269,15 @@ end
 plot_populations([🐛₀, 100, 500, 800]; r=r′, K)
 
 # ╔═╡ 510b18c6-fb7e-4897-959b-20fd1a55d30e
-plot_populations([5, 4.999, 4.998, 5.001, 5.002], 100; r=r′, K)
+plot_populations([5, 4.999, 4.998, 5.001, 5.002, 5.003], 100; r=r′, K)
 
 # ╔═╡ 8ed9ed3c-b39e-40ed-bde9-03fc4b6954ad
 plot_logistic(r′, K; show_spiderweb=true)
 
 # ╔═╡ 0afee444-9ee3-492a-936c-0be919873dbc
-biffurcation_values = [longterm_pop(K * rand(), 100; r=r, K) for r in r_values, rep in 1:200];
+biffurcation_values = [longterm_pop(K * rand(), 1000; r=r, K)
+								for r in r_values,
+								rep in 1:500];
 
 # ╔═╡ 4219fcb7-5e42-457c-a5aa-3442b1c6cc52
 begin 
@@ -1033,15 +1114,27 @@ version = "0.9.1+5"
 # ╔═╡ Cell order:
 # ╠═d8fc787a-e618-11eb-3a86-db49e5813a7d
 # ╠═c71870a1-7f19-4834-8d2b-5256ebd1827a
-# ╠═a1d12301-0530-4a3f-81f9-7674ffab8164
+# ╠═9dcbdc31-cbf7-43f4-9b28-759c98d406e1
 # ╠═33a5e2e3-3fa5-4357-b713-5b228424a455
+# ╠═09d20f2d-417e-4673-b861-185387789f7d
+# ╠═a1d12301-0530-4a3f-81f9-7674ffab8164
+# ╠═f39849c0-8883-45e5-83e4-ada04b739da2
 # ╠═ad631db2-0461-45f5-8e8f-390742391238
+# ╠═34324295-fd44-4b96-88f9-6a6ea566ec2c
 # ╠═2a9c8480-b833-4437-a05c-259e08ba435d
+# ╠═5d7adeb1-ef91-474a-a8bd-d61c200b2bf4
 # ╠═bab46d0d-f536-475f-9989-09eacf3a0962
+# ╠═fd827f67-4928-45b9-97f6-40a08fa20d45
 # ╠═82718529-4dde-4ba1-bc22-85de90bfe57a
+# ╠═df663a13-4a73-425e-a715-8cc4e6f25b4e
 # ╠═30d30de3-5258-4634-9d59-07924f053815
+# ╠═77b746ee-1e9d-40d0-884a-b121c2adc817
 # ╠═88165f3f-b68a-4d93-9917-2e58a418a6aa
+# ╠═ba6abe8b-d2dc-49ca-8cef-051008310cbc
 # ╠═c65fcc42-ead4-472b-90c8-18296f2ce31a
+# ╠═1ee88f3d-61c4-4182-bb0c-beeba6e78460
+# ╠═6c907367-14c6-4e16-91fb-0eccfa84db09
+# ╠═1eb01190-98b8-4101-b97e-accc384ad93f
 # ╠═c5cb9c83-5ba3-40b7-9729-7353ba2bc7ce
 # ╠═285c19e9-8277-4bef-be13-e073922b09c1
 # ╠═eedbc750-5123-4f3c-92dd-a9e438c22343
