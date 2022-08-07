@@ -1,0 +1,1 @@
+# Modeleren van een rupsenuitbraak met de logistische vergelijking

@@ -1,0 +1,4 @@
+name = "InsectBook"
+uuid = "062e962b-3970-4318-81ad-a999234f245a"
+authors = ["michielstock <michielfmstock@gmail.com>"]
+version = "0.1.0"
