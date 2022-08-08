@@ -60,14 +60,14 @@ r = 1.8
 
 # ╔═╡ 09d20f2d-417e-4673-b861-185387789f7d
 md"""
-Here, $r>0$ is a *growth paramater*, quantifying the number of ofspring per individual per generation. Remember, we work with averages so non-integers such as 0.3 or 3.2 are allowed. This number has to be positive, since one cannot have a negative number of descendents.
+Here, $r>0$ is a *growth parameter*, quantifying the number of offspring per individual per generation. Remember, we work with averages, so non-integers such as 0.3 or 3.2 are allowed. This number has to be positive since one cannot have a negative number of descendants.
 
 We can already ponder on how $r$ might influence the population:
-- If $r<1$, every insect gives rise to less then one individual in each generation. He1nce, the next generation with have fewer individuals than the last. Over time, the population will die out.
-- If $r>1$, every insect will produce more than one new indidual for the next generation. The population will increase as time moves forward.
-- In the edge case when $r=1$ the population is perfectly stable and will remain of constant size in time.
+- If $r<1$, every insect gives rise to less than one individual in each generation. Hence, the next generation has fewer individuals than the last. Over time, the population will die out.
+- If $r>1$, every insect will produce more than one new individual for the next generation. The population will increase as time moves forward.
+- In the edge case, when $r=1$, the population is perfectly stable and will remain of constant size in time.
 
-Since we are modelling a pest, we likely have $r>1$. Let us pick a $r=$ $r, each catepillar has a little bit less than two children surviving to the next generation.
+Since we are modelling a pest, we likely have $r>1$. Let us pick a $r=$ $r; each caterpillar has a little bit less than two children surviving to the next generation.
 """
 
 # ╔═╡ f39849c0-8883-45e5-83e4-ada04b739da2

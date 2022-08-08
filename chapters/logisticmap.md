@@ -41,31 +41,116 @@ Laat ons beginnen!
 
 ## Ongebonden exponetiële groei
 
-$$
-x_t = r x_t
-$$
-
-$r$ is de *groeiparameter*
-
-- $r < 1$
-- $r= 1$
-- $r > 1$
-
-
-gesloten uitdrukking
+Vele insecten willen zo veel mogelijk nakomelingen als mogelijk voorbrengen. In een generatie verpopt een buxusmotrups zich tot een buxusmot, welke nieuwe eitjes legt op een nieuwe haag. Uit deze eitjes kruipen nieuwe rupsen en de cyclus herbegint. Het leven van een insect is echter niet zonder gevaar. Op elk moment in de cyclus kunnen eitjes, rupsen, poppen en motten sterven door predatie van vogels, pesticiden, uithongering of andere gevaren. Als we echter gemiddeld kijken kunnen we aannemen dat elke rups aanleiding geeft tot een bepaald aantal nieuwe rupsen in de volgende generatie. Dit geeft de volgende regel:
 
 $$
-x_t = x_0r^t
+x_t = r x_{t-1}\,
 $$
+
+waar $r> 0$ is de *groeiparameter* is. 
+
+We kunnen deze regel eenvoudig in computercode voorstellen als
+
+```julia
+m(x; r) = r * x
+```
+
+De groeiparameter $r$ stelt het gemiddeld aantal nakomelingen per rups voor. We werken met gemiddelden, dus kommagetallen zoals 0.2 en 3.1 zijn toegestaan maar negatieve getallen houden geen steek.
+
+> Wiskundige modellen verwerken getallen. We onderscheiden *toestanden* (hier de $x$-en) en *parameters* (hier de groeiparameter $r$). De toestand is de eenheid waarin we geïntereseerd zijn en veranderd doorheen de simulatie. De parameters zijn grootheden die vast zijn gedurende de simulatie en beïnvloeden het gedrag van het model. 
+
+Even nadenken over wat $r$ betekent geeft de volgende conclusies:
+
+1. Als $r<1$ is brengt elke rups minder dan één rups voort per generatie. In elke tijdstap wordt de populatie kleiner en kleiner tot ze uiteindelijk uitsteft.
+2. Indien $r>0$ is zal elke rups aanleiding geven tot *meer* dan één nieuwe rups in de volgende generatie. De populatie zal groeien.
+3. In het randgeval waar $r=1$ is de populatiegroote perfect stabiel. De geboorte van nieuwe rupsen compenseert voor de sterfte.
+
+Gezien we hier naar plaaginsecten kijken is de groeiparameter hoogst waarschijnlijk groter dan 1.
+
+waar `m` een functie is die de regel ("map") implementeert.
+
+Laat ons eens experimenteren. Je kan dit in een Python of Julia terminal doen, of gewoon met een rekenmachine. We zetten $r=1.8$, dus elke rups leidt gemiddeld gezien tot iets minder dan twee nieuwe rupsen per generatie.
+
+```julia
+r = 1.8
+```
+
+We moeten nu enkel nog een initiële $x_0$ zetten, de populatiegrootte op $t=0$. We beginnen met een bescheiden populatie van vijf rupsen.
+
+```
+x₀ = 5
+```
+
+ We passen de functie `m` toe: 
+
+```julia
+julia> x₁ = m(x₀; r)
+9.0
+```
+
+Zoals verwacht zien we net geen verdubbeling van de populatie. Om nog een generatie verder te gaan passen we ofwel de functie één keer toe op `x₁`of twee keer op `x₀`
+
+```julia
+julia> x₂ = m(x₁; r)
+16.2
+
+julia> m(m(x₀; r); r)  # zelfde resultaat
+16.2
+```
+
+We kunnen zo verder naar de derde en vierde generatie gaan...
+
+```julia
+julia> x₃ = m(x₂; r)
+29.16
+
+julia> x₄ = m(x₃; r)
+52.488
+```
+
+We zien dat na vier generaties, de populatie al meer dan tien keer zo groot geworden is. 
+
+Dit model is simpel genoeg dat we een *gesloten uitdrukking* kunnen geven voor de populatiegrootte doorheen de tijd:
+
+$$
+x_t=x_{0}r^t \qquad t=0, 1, 2, \ldots
+$$
+
 
 $$
 x_t = x_0e^{\ln(r)t}
 $$
 
+Aangezien dit een exponentiële functie is wordt dit groeimodel dus *exponentiële groei* genoemd. De implementatie is eenvoudig:
+
+```julia
+pop_exp(x₀, t; r) = x₀ * r^t
+```
+
+We zien dat deze hetzelfde resultaat geeft als voordien:
+
+```julia
+julia> pop_exp.(x₀, 0:4; r)
+5-element Vector{Float64}:
+  5.0
+  9.0
+ 16.200000000000003
+ 29.160000000000004
+ 52.488
+ ```
+- [ ] footnote explanation
+
+Laat ons een figuur maken voor tien generaties.
+
 - [ ] plot exponetial growth
 
-waarom dit onrealistisch is
+De plaag groeit erg snel, dit is verontrustend. Wat als we nog verder inde tijd kijken.
 
+- [ ] plot exp growth 50 gen
+
+Oei. We zien dat de populatiegrootte groeit zonder enige belemmering. Na 50 generaties zijn er meer dan 29000000000000 rupsen. Als we aannemen dat één rups ongeveer 3 gram weegt hebben we na 50 generaties meer dan 87 miljoen ton rupsen, ofwel 40 mijoen nijlpaarden. Er zijn bijlange niet genoeg Buxushagen in de wereld om dergelijke populaties te bekomen!
+
+In de praktijk heeft elk ecosystem een bepaalde *draagkracht*, de hoeveelheid voedsel, water, ruimte die voorhanden is om een bepaalde populatie te ondersteuenen/. Onze rupsenpopulatie is geimiteerd door het aantal planten die beschikbaar zijn als voedsel. De draagkracht wordt vaak voorgesteld door de letter $K$. Laat ons aannemen dat $K=1000$. Onze tuin heeft genoeg Buxussen om 1000 rupsen te voeden en geen meer. Kunnen we de regel uitbreiden om hier rekening mee te houden?
 
 ## Logistische groei
 
@@ -86,3 +171,6 @@ $$
 ## Chaos in de verdere wereld
 
 ## Oefeningen
+
+1. Bewijs aan de hand van inductie de gesloten uitdrukking voor exponentiele groei.
+2. Exponentiële groei wordt vaak voorgesteld door de formule $x_t=x_0e^{at}$ met $a$ een nieuwe groeiparameter. Kan je het verband tussen $a$ en $r$ vinden?
