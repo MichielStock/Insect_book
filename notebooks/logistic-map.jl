@@ -21,22 +21,22 @@ using Plots, PlutoUI
 md"""
 # Caterpillar growth: the logistic map
 
-In this chapter, we study the growth of a population of caterpillars (🐛). Catepillars are a common pest in gardens, for example the Box tree moth (*Cydalima perspectalis*) is an invasive species in Europe, destroying many valuable buxus shubberies. 
+In this chapter, we study the growth of a population of caterpillars (🐛). Caterpillars are a common pest in gardens. For example, the Box tree moth (*Cydalima perspectalis*) is an invasive species in Europe, destroying many valuable Buxus shrubberies. 
 
-![Plant damage by catepillars, the larval stage of the Box tree moth.](https://upload.wikimedia.org/wikipedia/commons/9/95/Box_tree_moth_larval_feeding_damage.jpg)
+![Plant damage by caterpillars, the larval stage of the Box tree moth.](https://upload.wikimedia.org/wikipedia/commons/9/95/Box_tree_moth_larval_feeding_damage.jpg)
 
-Mathematical models can help gardeners and farmers understand how a population will evolve through time. Will it converge to an copeable level? Will the population grow out of bound, requiring the use of pesticides? Or, will the population collapse on its own? 
+Mathematical models can help gardeners and farmers understand how a population will evolve through time. Will it converge to a manageable level? Will the population grow out of bound, requiring the use of pesticides? Or will the population collapse on its own? 
 
-We will model the caterpillar population throught a number of perfectly non-overlapping generations. Here we use $x_t$ as the population size at generation or time $t$. The goal is to determine the progression
+We will model the caterpillar population through several perfectly non-overlapping generations. Here we use $x_t$ as the population size at generation or time $t$. The goal is to determine the progression
 
 $$x_{0}, x_{1}, x_{2},\ldots, x_{t-1}, x_{t}, \ldots$$
 
-Here, we know $x_0$ as the initial population size. All other values follow from this and the rules we assume the population follows. We make two assumtions for these rules to update the population:
+Here, we know $x_0$ as the initial population size. All other values follow from this and the rules we assume the population follows. We make two assumptions for these rules to update the population:
 
 1. We assume the rule is perfectly *deterministic*. Given that we know the population at time step $t-1$, we can perfectly predict the population at time $t$. 
-2. The population is large enough we can model it using real numbers (21.2, 178.19, 1437976.6, ...) instead of natural numbers (21, 178, 1437976, ...). This is a necessary deviation of reality as 'half' or '0.6' of a caterpillar might not really make sense. Either you might think of the population large enough that this is negligible or that we model biomass (the equivalent number of bugs) instead of individuals.
+2. The population is large enough to model it using real numbers (21.2, 178.19, 1437976.6, ...) instead of natural numbers (21, 178, 1437976, ...). This is a necessary deviation of reality as 'half' or '0.6' of a caterpillar might not really make sense. Either you might think of the population as large enough that this is negligible or that we model biomass (the equivalent number of bugs) instead of individuals.
 
-We will consider two models. First, we look at unbounded, exponential growth. Here, the population either dies out rapidly or increases without bound, depending on the growth parameter. Next, we introduce a carrying capacity, limiting the number of caterpillars in the ecosystem. This slightly more complex model can generate much more interesting behaviour, from simple growth or extinction to occilations and even chaos! 
+We will consider two models. First, we look at unbounded, exponential growth. Here, the population either dies out rapidly or increases without bound, depending on the growth parameter. Next, we introduce a carrying capacity, limiting the number of caterpillars in the ecosystem. This slightly more complex model can generate much more interesting behaviour, from simple growth or extinction to oscillations and even chaos! 
 
 Let us begin!
 """
