@@ -139,7 +139,7 @@ We suggest a new rule to update the population, the *logistic map*:
 
 $$x_{t} = r\left(1-\frac{x_{t-1}}{K}\right)x_{t-1}\,.$$
 
-The new term says that the growth is less rapid when the population is closer to the carrying capacity. You can easily see this by considering the two extreme cases. When $x_{t-1}\approx 0$ (but still positive!), the term between brackets is approximately zero, meaning that the updating rule is virtually the same as the exponential growth. Food is plenty and the population grows at maximum rate. However, when $x_{t-1}\approx K$, the term between the brackets becomes close to zero and the population collapses!
+The new term says that the growth is less rapid when the population is closer to the carrying capacity. You can easily see this by considering the two extreme cases. When $x_{t-1}\approx 0$ (but still positive!), the term between brackets is approximately zero, meaning that the updating rule is virtually the same as the exponential growth. Food is plenty, and the population is growing at a maximum rate. However, when $x_{t-1}\approx K$, the term between the brackets becomes close to zero, and the population collapses!
 
 Mathematicians often use the symbol $\sigma$ (pronounced as "sigma") as a shorthand notation for the logistic map.
 
@@ -212,17 +212,17 @@ r′  # we add the prime because it is a different variable
 
 # ╔═╡ cac63499-515c-4774-a2ed-930375f577d6
 md"""
-The effect of the parameter $r$ in the logistic map can be studies via a *biffurcation plot*, this plots the population size after a long time (here, 100 generations) as a function of $r$. We obtain this plot by performing many simulations for each $r$, each time using different (random) intial population sizes.
+The effect of the parameter $r$ in the logistic map can be studied via a *bifurcation plot*, this plots the population size after a long time (here, 100 generations) as a function of $r$. We obtain this plot by performing many simulations for each $r$, each time using different (random) initial population sizes.
 
 In the plot below, we see the different regimes one can obtain using the logistic map.
 """
 
 # ╔═╡ 0ca85f9a-44f7-4290-8232-62ed6700c7cf
 md"""
-This biffurcation plot neatly summarizes the behaviour of the logistic map for all values of $r$:
+This bifurcation plot neatly summarizes the behaviour of the logistic map for all values of $r$:
 1. for $r<1$, we have extinction;
 2. for $1 < r < 3$ we have a simple growth towards $x_\text{eq}$;
-3. for $3 < r < 4$, things, are getting interesting. Some values give occilating behaviour, others show chaotic behaviour making the next step impossible to predict.
+3. for $3 < r < 4$, things, are getting interesting. Some values give oscillating behaviour, others show chaotic behaviour making the next step impossible to predict.
 """
 
 # ╔═╡ 81dbf61d-004b-429a-85dd-3f3750ce6e78
@@ -329,12 +329,12 @@ We see that the population rapidly converges to a value of $x_\text{eq}$=$🐛eq
 
 $$x_\text{eq} = r\left(1-\frac{x_\text{eq}}{K}\right)x_\text{eq}\,.$$
 
-As this is only a simple quadratic equation, we can easily solve for two solutions:
+As this is only a simple quadratic equation, we can quickly solve for two solutions:
 
-- first, $x_\text{eq}=0$ is a trivial solution. If there are no caterpillars, the population will remain empty (duh!). However, this equilibririum is *unstable* adding a single individual will kickstart the population.
+- first, $x_\text{eq}=0$ is a trivial solution. If there are no caterpillars, the population will remain empty (duh!). However, this equilibrium is *unstable* and adding a single individual will kickstart the population.
 - the second root is given by $x_\text{eq}=K\frac{r-1}{r}$, which we observe in the plot. This solution is stable (for our current value of $r$!) as the population converges to it.
 
-We can will cement the formula for the equilibrium population into a function. 
+We can pour the formula for the equilibrium population into a function. 
 """
 
 # ╔═╡ 97b19948-4a0a-4967-b44e-c02b456476c5
@@ -358,25 +358,25 @@ begin
 end
 
 # ╔═╡ 6302fd40-b419-41d0-a6db-947715ba4531
-plot_populations([🐛₀, 100, 500, 800]; r=r′, K)
+plot_populations([🐛₀, 100, 250, 500, 800]; r=r′, K)
 
 # ╔═╡ 510b18c6-fb7e-4897-959b-20fd1a55d30e
-plot_populations([5, 4.999, 4.998, 5.001, 5.002, 5.003], 100; r=r′, K)
+plot_populations((5-0.002):0.001:(5+0.002), 100; r=r′, K)
 
 # ╔═╡ 8ed9ed3c-b39e-40ed-bde9-03fc4b6954ad
 plot_logistic(r′, K; show_spiderweb=true)
 
 # ╔═╡ 0afee444-9ee3-492a-936c-0be919873dbc
-biffurcation_values = [longterm_pop(K * rand(), 1000; r=r, K)
+bifurcation_values = [longterm_pop(K * rand(), 100; r=r, K)
 								for r in r_values,
 								rep in 1:500];
 
 # ╔═╡ 4219fcb7-5e42-457c-a5aa-3442b1c6cc52
 begin 
-	scatter(r_values, biffurcation_values,
-		color="red", ms=1, alpha=0.7, label="",
+	scatter(r_values, bifurcation_values,
+		color="red", ms=1.25, alpha=0.7, label="",
 		xlabel="r", ylabel="population size\nafter 100 generations",
-	       title="biffurcation diagram logistic map")
+	       title="bifurcation diagram logistic map")
 end
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
