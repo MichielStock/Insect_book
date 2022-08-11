@@ -269,7 +269,27 @@ Zo zien we
 
 ## Chaos in de verdere wereld
 
+Groeimodellen vind je overal, niet enkel om de evolutie van 
+
+- groei: dieren, mensen, wet van Moore
+- exponentiele groei goede benadering
+- Pandemic, R0 waarde
+
+- de logisitisch vergelijking is belangrijk, niet omdat ze realistisch is, maar simpel voorbeeld chaos
+- Choas werd beschreven door Lorenz, weersystemen
+- bewegingen vlinder kan een orkaan veroorzaken
+- vloeistoffen, beurs, 
+
+- Lorenze butterfly
+
+- [ ] figure lorenz attractor
+
+- aanleiding tot hoofdstuk DVG
+
 ## Oefeningen
 
 1. Bewijs aan de hand van inductie de gesloten uitdrukking voor exponentiele groei.
 2. Exponentiële groei wordt vaak voorgesteld door de formule $x_t=x_0e^{at}$ met $a$ een nieuwe groeiparameter. Kan je het verband tussen $a$ en $r$ vinden?
+3. Andere maps
+   - tent map
+   - Gauss map
