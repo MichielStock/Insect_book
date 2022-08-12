@@ -25,7 +25,7 @@ $$x_{0}, x_{1}, x_{2},\ldots, x_{t-1}, x_{t}, \ldots$$
 
 Hier is $x_0$ de initiële populatiegrootte, het aantal rupsen op het begin van de metingen.
 
-Wat we willen bekomen is een soort van regel die ons vertelt wat de populatiegroote op tijdstip $t$ (dus $x_t$) is, geven dat weten hoeveel rupsen er zijn op tijdstip $t-1$ (dus $x_{t-1}).  We maken drie veronderstellingen voor zo'n regel:
+Wat we willen bekomen is een soort van regel die ons vertelt wat de populatiegroote op tijdstip $t$ (dus $x_t$) is, geven dat weten hoeveel rupsen er zijn op tijdstip $t-1$ (dus $x_{t-1}$).  We maken drie veronderstellingen voor zo'n regel:
 
 1. We gaan er van uit dat de regel *determistisch* is. Als we de grootte kennen op tijdstip $t-1$ geeft dit altijd dezelfde grootte op tijdstip $t$. We houden geen rekening met willekeurige fluctuaties.
 2. We nemen aan dat onze populatie groot genoeg is zodat we de kunnen voorstellen aan de hand van *reële getallen* zoals 21,2, 178,19, en 1437976,6 in plaats van *natuurlijke getallen* zoals 21, 178 en 1437976. In werkelijkheid zijn er geen (levende) 'halve' rupsen. Voor de eenvoud nemen we aan dat de populatie groot genoeg is dat de populatie *oneindig deelbaar* is zodat kommagetallen een goede benadering zijn. FN: Voor wie zich nog altijd niet helemaal lekker voelt bij fracties van rupsen, je kan ook over $x_t$ denken als de biomassa van rupsen. Dit is het totaal gewicht van rupsen op tijdstip $t$.
@@ -138,11 +138,11 @@ julia> pop_exp.(x₀, 0:4; r)
 
 Laat ons een figuur maken voor tien generaties.
 
-- [ ] plot exponetial growth
+![Exponentiële groei na tien generaties.](../figures/logisticmap/exp_10g.png)]
 
 De plaag groeit erg snel, dit is verontrustend. Wat als we nog verder inde tijd kijken.
 
-- [ ] plot exp growth 50 gen
+![Exponentiële groei na 50 generaties.](../figures/logisticmap/exp_50g.png)]
 
 Oei. We zien dat de populatiegrootte groeit zonder enige belemmering. Na 50 generaties zijn er meer dan 29000000000000 rupsen. Als we aannemen dat één rups ongeveer 3 gram weegt hebben we na 50 generaties meer dan 87 miljoen ton rupsen, ofwel 40 mijoen nijlpaarden. Er zijn bijlange niet genoeg Buxushagen in de wereld om dergelijke populaties te bekomen!
 
@@ -191,7 +191,7 @@ julia> x₄ = σ(x₃; r, K)
 
 Vergelijk met de resulaten van de exponentiele groei, wat merk je op? De groei ziet er gelijkaardig uit, waarbij de logistische groei iets trager is. Dit komt omdat we na vier stappen nog erg ver van de draagkracht zitten: $49.49 / 1000 \approx 5\%$. Laat ons even over een langer tijdsinterval kijken.
 
-- [ ] figure log growth
+![Logistische groei voor 50 generaties.](../figures/logisticmap/log_50g_conv.png)
 
 Hier zien we een kwalitatief verschil met de exponentiele groei! In plaats van ongelimiteerd door te groeien begint de groei na ongeveer zeven generaties te temperen. Vanaf generatie 12 is de populatiegrootte stabiel op ongeveer 444 rupsen. Merk op dat dit flink minder is dan de draagkracht van het systeem!
 
@@ -209,33 +209,33 @@ een kwadratische vergelijking van de vorm $ax^2+bx+c=0$. Een beetje rekenen geef
 - Ten eerste, $x_\text{eq}=0$, een triviale oplossing. Indien er geen rupsen zijn zal de populatie ook leeg blijven. Dit evenwicht is echter *onstabiel*. Een enkele rups in het systeem kan de populatie op gang brengen.
 - Het tweede evenwichtspunt is $x_\text{eq}=K\frac{r-1}{r}$, welke we zien op de plot. Dit is stabiel (voor deze groeisnelheid!), gezien we van verschillende startwaarden kunnen vertrekken en altijd op hetzelfde uitkomen.
 
-- [ ] figuur startwaarden
+![Logistische groei voor 50 generaties met verschillende startwaarden.](../figures/logisticmap/log_starts_conv.png)
 
 ## Schommelingen in de populatie
 
 Wat als we andere waarden nemen voor de groeisnelheid? Indien we $r=3.34$ zien we een compleet ander gedrag. 
 
-- [ ] figuur oscillaties 2
+![](../figures/logisticmap/log_50g_osc2.png)
 
 We zien dat de populatie niet convergeert naar een $x_\text{eq}$ maar een *periodiek* gedrag vertoont. De ene generatie is de populatiegrootte minder dan verwacht bij evenwicht, de volgende generatie terug meer enzovoort. Hier zien we dat de populatiegrootte zich elke twee generaties herhaalt, dit noemen we een periode van twee.
 
 Indien we $r$ nog een ietsiepietsie vergroten naar 3.455 kunnen we een periode van vier waarnemen. 
 
-- figuur oscillaties 4
+![](../figures/logisticmap/log_50g_osc4.png)
 
 ## Een wispelturige populatie
 
 Logistische groei lijkt niet zo gecompliceerd. Ofwel lijken we te convergeren naar een vaste waarde $x_\text{eq}=K\frac{r-1}{r}$, ofwel gaat de populatie op en neer volgens een regelmatig patroon. Blijft deze makkelijk te voorspellen? Een groeisnelheid van $r=3.6$ leert ons van niet.
 
-- fig log r=3.6
+![](../figures/logisticmap/log_50g_chaos.png)
 
 Hier gaat de populatie op en neer maar zonder enige regelmaat. Soms lijkt het alsof de grootte voor een tijdje gewoon terug oscilleert om dan plots het patroon te doorbreken. Wat als we verschillende startwaarden nemen?
 
-- [ ] figure starts
+![](../figures/logisticmap/log_starts_chaos.png)
 
 Hier zien we helemaal het omgekeerde van een convergentie: de tijdsreeksen zijn compleet verschillend. Logisch denk je misschien, want ze zijn allemaal op compleet verschillende plaatsen begonnen. Wat als we de reeksen beginnen, maar met slechts een piepklein beetje verschil? Dus we starten van $x_0=4.998, 4.999, 5, 5.001, 5.002$. Hier zou je verwachten dat de reeksen ongeveer syncroon lopen.
 
-- figure small diff chaos
+![](../figures/logisticmap/log_starts_chaos_tiny.png)
 
 De reeksen met verschillende startwaarden lopen inderdaad samen. Voor ongeveer 20 generaties. Daarna lopen de tijdreeksen weer helemaal verschillend.
 
@@ -247,19 +247,23 @@ Voor bepaalde waarden van de groeisnelheid worden heel kleine verschillen in de 
 
 We zien dat de waarde van $r$ een sterke invloed uitoefend op het gedrag van de logistische groei. Een nieuwe soort figuur verschaft ons beter inzicht in wat er nu eigenlijhk gebeurt. We plotten op de x-as $x_{t-1}$ en op de y-as $x_t$ zodat we zien hoe de grootte verspringt van populate tot populatie. We beginnen met $r=1.8$, het eenvoudig convergerend gedrag.
 
-- [ ] spiderweb
+![](../figures/logisticmap/log_spiderweb_conv.png)
 
 Merk op dat we twee hulplijnen getekend hebben. De eerste is de logistische vergelijking $\sigma(x) = r(1-x/K)x$, het tweede de eerste bissectrice die het vlak in twee snijdt. De laatste is nuttig omdat $x_t$ van de ene generatie de $x_{t-1}$ van de volgende generatie is. Door de evolutie van de populatie als een trap tussen deze twee curves voor te stellen zien we hier hoe de populatie naar het snijpunt tussen de curves convergeert. Dit snijpunt is natuurlijk de evenwichtspopulatie. Dit soort plot wordt soms poetisch een *spinnewebdiagram* genoemd.
 
+Wanneer we naar $r=34$ zien we dat de rode lijnperfect symmetrisch terugketst tussen de logistische vergelijking. We krijgen daardoor de oscillaties die we eerder waarnemen.
+
+![](../figures/logisticmap/log_spiderweb_osc.png)
+
 Het chaotisch regime met $r=3.6$ ziet er als volgt uit.
 
-- [ ] spiderweb diagram
+![](../figures/logisticmap/log_spiderweb_chaos.png)
 
 De vorm van de logistische verlijking is nu een beetje anders waardoor de bissectrice na de top komt. Soms verspringt de lijn voor en na de top, wat verklaart waarom het gedrag zo onvoorspelbaar is.
 
 Wat als we kijken naar **alle** waarden voor de groeisnelheid $r$? Dit kunnen we doen aan de hand van een *bifurcatieplot*. Wat we doen is voor elke waarde van $r$ van 0 tot 4 de logistische vergelijking toepassen voor een groot aantal stappen (hier 100) op een startwaarde. 
 
-- [ ] bifurction plots
+![](../figures/logisticmap/log_bifurcation_diagram.png)
 
 Hierop kan je onmiddellijk zien welke eindwaarden mogelijk zijn voor bepaalde waarden van $r$. 
 
