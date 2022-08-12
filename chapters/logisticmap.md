@@ -122,7 +122,7 @@ Aangezien dit een exponentiële functie is wordt dit groeimodel dus *exponentië
 pop_exp(x₀, t; r) = x₀ * r^t
 ```
 
-We zien dat deze hetzelfde resultaat geeft als voordien:
+We zien dat deze hetzelfde resultaat geeft als voordien[^code]:
 
 ```julia
 julia> pop_exp.(x₀, 0:4; r)
@@ -133,7 +133,8 @@ julia> pop_exp.(x₀, 0:4; r)
  29.160000000000004
  52.488
  ```
-- [ ] footnote explanation
+
+[^code]: Deze lijn code is wat moeilijker dan wat we tot nu toe gezien hebben. het `0:4` genereert een reeks generaties van 0 tot 4 in stappen van 1. We willen een lijst (`Vector`) aanmaken dit voor elke generatie die grootte berekent. Door een `.` na de functie en voor de haakjes te plaatsen zal de functie voor elke generatie toegepast worden. Een equalente manier is om `[pop_exp(x₀, t; r) for t in 0:4]` te lopen. Dit is ongeveer hoe je het in de Python taal zo doen.
 
 Laat ons een figuur maken voor tien generaties.
 
@@ -267,29 +268,32 @@ Zo zien we
 - voor $1\le r < 3$ zien we convergentie naar $x_\text{eq}$;
 - voor $3\le r < 4$ wordt het interessanter! We zien eerst een splitsing (een bifurcatie!) in twee. Dit is een periodieke reeks met periode 2. Voor hogere waarden gaat de periode naar vier om uiteindelijk naar een chaotisch regime over te gaan.
 
-## Chaos in de verdere wereld
+## De insekten voorbij
+TODO: betere naam voor deze sectie
 
-Groeimodellen vind je overal, niet enkel om de evolutie van 
+Groeimodellen vind je overal, niet enkel om de evolutie van insectenpopulaties te beschrijven, maar ook van kristallen, bacteriën enz. Ook onze maatschappij vertoont exponentiële groei, denk maar aan de wereldbevolking in de twintigste eeuw (een verdubbeling elke 37 jaar). Een bekende wet in technologie is de zogenaamde Wet van Moore dit stelt dat het aantal transistors in een computerchip elke twee jaar verdubbelt. Oneindige groei is vrijwel altijd onmogglijk, ooit moet je op de limiten van je systreem botsen. Maar exponentiele groei is vaak een uitstekende beschrijving van het *begin* van de groei. Tijdens de COVID-19 pandemie werd exponentiële groei ook vaak in de mond genomen om het aantal besmette personen te beschrijven[^R0]. Wie nog eens naar de groeicurves kijkt ziet het gevaar van een exponentiële groei. Het begin is traag, tot het plots in de hoogte schiet...
 
-- groei: dieren, mensen, wet van Moore
-- exponentiele groei goede benadering
-- Pandemic, R0 waarde
+[^R0]: De befaamde $R_0$-waarde waar epidemiologen het graag over hadden komt ruwweg overeen met de groeisnelheid $r$ die wij hier bestudeerden. Via sociale distancing, mondmaskers en vaccinatie werd er alles aan gedaan om deze onder de 1 te brengen.
 
-- de logisitisch vergelijking is belangrijk, niet omdat ze realistisch is, maar simpel voorbeeld chaos
-- Choas werd beschreven door Lorenz, weersystemen
-- bewegingen vlinder kan een orkaan veroorzaken
-- vloeistoffen, beurs, 
+De logisitische vergelijking is enorm belangrijk, niet omdat ze zo biologisch realistisch is, maar omdat het één van de simpelste manieren is om een chaotische reeks te genereren. Chaostheorie, de wetenschap dat kleine oorzaken grote, onverwachte gevolgen kunnen hebben, is een relatief jonge tak van de wiskunde. Ze kon pas bloeien in de twintigste eeuw toen computers het mogelijk maakten om snel computationele experimenten uit te voeren, zoals we hier gedaan hebben. Eén van de pioniers in dit veld was de weerkundige Edward Lorenz. Terwijl hij experimenteerde met een eenvoudig weermodel rondde hij de getallen af van zes naar drie cijfers om de berekeningen sneller te laten lopen. Tot de grote schok van de wetenschappelijke gemeenschap die tot dan toe slechts in een triviale afrondingsfout zou resulteren gaf dit compleet andere uitkomsten. Tegenwoordig is het algemeen aanvaard dat systemen zoals het weer (en de stromingen van vloeistoffen in het algemeen) chaotisch zijn. Dit maakt het zo goed als onmogelijk om het weer nauwkeurig te voorspellen meer dan een week in de toekomst.
 
-- Lorenze butterfly
+![](https://upload.wikimedia.org/wikipedia/commons/thumb/f/fe/Airplane_vortex_edit.jpg/1920px-Airplane_vortex_edit.jpg)
+
+Het model van Lorenz is zo iconisch dat we hier even willen tonen. Het beschrijft een trajectory in een driedimentionele ruimte. De drie dimensies stellen elk een weerkundig/e variable voor. Dit traject lijkt wat op een een vlinder, waarbij het punt dat dit traject volgt schijnbaar willekeurig beslist om van de ene naar de andere vleugel te verspringen. Misschien was het deze figuur die Lorenz inspireerde om te stellen dat een vleugelslag van een vlindertje mogelijks tot een orkaan kan leiden aan de andere kant van de wereld.
+
+
+![](https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Lorenz_attractor_yb.svg/1920px-Lorenz_attractor_yb.svg.png)
 
 - [ ] figure lorenz attractor
 
-- aanleiding tot hoofdstuk DVG
+Deze bovenstaande Lorenz attractor is geen discreet model zoals we in dit hoofdstuk besproken hebben maar een stelsel van differentiaalvergelijkingen. Differntiaalvergelijkingen stellen verandingen in de tijd voor en komen alomtegenwoordig voor om natuurlijke fenomenen te beschrijven. Het is het onderwerp van het volgende hoofdstuk.
 
 ## Oefeningen
 
 1. Bewijs aan de hand van inductie de gesloten uitdrukking voor exponentiele groei.
 2. Exponentiële groei wordt vaak voorgesteld door de formule $x_t=x_0e^{at}$ met $a$ een nieuwe groeiparameter. Kan je het verband tussen $a$ en $r$ vinden?
-3. Andere maps
-   - tent map
-   - Gauss map
+3. Kan je op basis van $r$ in de exponentiële groei een formule vinden voor de verdubbelingstijd, dit is het aantal generaties nodig om de populatiegrootte te verdubbelen?
+4. naast de logistische mapping zijn er nog andere maps. Probeer je die even uit?
+   - de cosinus map $x_t = \cos(x_{t-1})$ (in code: `tent(x) = cos(x)`);
+   - de tent map $x_t = \min(x_{t-1}, 1-x_{t-1})$ (in code: `tent(x) = min(x, 1-x)`);
+   - Gauss map $x_t = \exp(-\alpha (x_{t-1})^2) +\beta)$ (in code: `gauss(x; α, β) = exp(α * x^2) + β`).
