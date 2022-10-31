@@ -16,88 +16,145 @@ Als we biologische bestrijding willen modelleren hebben we dus een complexer mod
 
 ## Wiskundige intermezzo: afgeleiden van functies
 
-In het modeleren beschouwen gebruiken we *functies* die een transformatie doorvoeren van hun input naar output. 
+Voor de rupsen in het vorig hoofdstuk hadden we een formule die op basis van de populatiegrootte op stap $t$ de populatiegrootte op stat $t+1$ kon berekenen. De modellen van dit hoofdstuk zijn wat verfijnder: in plaats van rechtstreeks naar de *toestand* te kijken (hier, aantal insecten) beschrijven ze het process op basis van de *verandering* in de toestand. We hebben het niet meer over populatiegrootte maar over populatie*groei*. Voor we een model kunnen vormen moeten we groei of verandering wiskundig kunnen vastleggen. Dit kan door middel van de *afgeleide*.
 
-
-- bv $f(t)=t\sin(t)$ `f(t) = t * sin(t)`
-- functie uit punten
-- functie is continue
-- afgeleide
+Om te modelleren gebruiken we wiskundige functies die een bepaalde *input* (bv. een $x$) omzetten naar een bepaalde *output* (bv. een $y$). Denk maar aan de functie $f(x) = x^2$, die voor elke $x$ zijn kwadraat weergeeft. Hier zijn we vooral geïnteresseerd in processen die doorheen de tijd lopen, dus we nemen de $t$ als input. Laat ons een simpele functie nemen.
 
 $$
-\frac{\text{d}f(t)}{\text{d}t}\approx \frac{f(t+\Delta t) - f(t)}{\Delta t}
+f(t) = t\sin(t)
 $$
 
-Wat will dit zeggen:
-1. we hebben een functie $f(t)$, bijvoorbeel $f(t)=t\sin(t)$
-2. we evaluelen die in een bepaalde $t$, bijvoorbeeld $t=2$, dit geeft $f(2)\approx1.81859$
+wat we makkelijk in code kunnen omzetten:
+
+```
+julia> f(t) = t * sin(t)
+f (generic function with 1 method)
+```
+
+```
+julia> f(5)
+-4.794621373315692
+```
+
+Hier is een plot van deze functie:
+
+- [ ] add plot  continuous line
+
+We zien hier een mooie doorlopende lijn, maar dit is echter schijn. Onze computer kan slechts één punt tergelijkertijd evalueren. Wat je ziet is een groot maar eindig aantal punten dat de computer berekend en de plotter verbindt met een vloeiende lijn. De volgende figuur staat wat dichter bij de werkelijkheid:
+
+- [ ] add scatter plot
+
+Hier zien we dezelfde functie, maar we plotten slechts elke 0.2 tijdstappen een evaluatie. We duiden de tijdstappen aan met $\Delta t$ =0.2, waar het symbool $\Delta$ vaak gebruikt wordt om een verschil aan te duiden.
+
+Wat we willen weten is hoe snel de functie daalt of stijgt. Dit kunnen we doen door het telkens het verschil $f(t+\Delta t) - f(t)$ te berekenen voor elke tijdstap. 
+
+
+- [ ] plot verschil
+
+
+We zien dat er regio's zijn waar de functie stijgt (het verschil is positief) en waar de functie daalt (het verschil is negatief). De verandering kan snel of traag zijn, dit kan je afleiden uit de (absolute waarde van) het verschil. Het verschil dat we geplot hebben hangt natuurlijk af van onze waarde van $\Delta t$ die we gekozen hebben. Indien we een kleinere waarde genomen hadden, bijvoorbeeld $\Delta t=0.1$, dan was het verschil in regel kleiner. Om hiervoor de corrigeren zullen we *delen door de tijdstap*. Dit laat ons toe om de wiskundige definitie van de afgeleide te benaderen:
+
+$$
+\frac{\text{d}f(t)}{\text{d}t}\approx \frac{f(t+\Delta t) - f(t)}{\Delta t}\,.
+$$
+
+Hier stelt $\frac{\text{d}f(t)}{\text{d}t}$ de afgeleide van de functie $f$ naar de tijd voor. Dat wil zeggen, hoe snel deze functie stijgt of daalt op tijdstip $t$. Het $\approx$ teken wil zeggen dat dit ongeveer gelijk is, en de benadering wordt beter met kleinere tijdstappen[^afgeleide].
+
+[^afgeleide]: De exacte wiskundige definitie die je in wiskundelessen ziet is 
+$$
+\frac{\text{d}f(t)}{\text{d}t}=\lim_{\Delta t\rightarrow 0} \frac{f(t+\Delta t) - f(t)}{\Delta t}\,.
+$$
+De notatie $\lim_{\Delta t\rightarrow 0}$ betekent dat we $\Delta t$ naar nul brengen. 
+
+We zullen deze formule eens toepassen voor $t=5$:
+1. we hebben onze functie $f(t)$, bijvoorbeel $f(t)=t\sin(t)$
+2. we evaluelen die in een bepaalde $t$, bijvoorbeeld $t=5$, dit geeft $f(2)\approx -4.7946$
 3. dan beschouwen we een kleine verandering $\Delta t$, b.v. $\Delta t=0.1$
-4. we berekenen $f(t+\Delta t)$, dus de functie iets verder in de tijd: $f(2.1)\approx1.8128$
-5. dan nemen we het verschil $f(t+\Delta t) - f(t)$, hier $1.8128 - 1.81859=-0.05855$
-6. dit verschil delen we door het tijdstapje $\delta t$ die we namen: $-0.05855/0.1 = -0.5855$
+4. we berekenen $f(t+\Delta t)$, dus de functie iets verder in de tijd: $f(5.1)\approx -4.7898$
+5. dan nemen we het verschil $f(t+\Delta t) - f(t)$, hier $-4.7898 - (-4.7946)=0.0048$
+6. dit verschil delen we door het tijdstapje $\Delta t$ die we namen: $0.0048/0.1 = 0.048$
 
-De formule die we hier gebruiken om de afgeleide te bepalen wordt de *eindige differentie methode* genoemd. Ze is zeer eenvoudig te implementeren.
+We zien hier dat de afgeleide op $t=5$ erg klein is. Als we terugkijken naar de grafiek van $f(t)$ dan zien we inderdaad dat die vlak is rond dat tijdstip, er is een lokaal minimum.
 
-```julia
+De formule die we hier gebruikten om de afgeleide te bepalen wordt de *eindige differentie methode* genoemd. Ze is zeer eenvoudig te implementeren.
+
+```
 eindige_differentie(f, t; Δt=0.01) = (f(t + Δt) - f(t)) / Δt
 ```
 
-```julia
+We hebben `Δt` als een parameter gekozen die we kunnen aanpassen.
+
+```
 julia> eindige_differentie(f, 2.0; Δt=0.1)
 -0.05855183688728616
 ```
 
 Wat als we een kleinere waarde voor $\Delta t$ nemen?
 
-```julia
+```
 julia> eindige_differentie(f, 2.0; Δt=0.01)
 0.06371786322902917
 ```
 
 En nog kleiner?
 
-```julia
+```
 julia> eindige_differentie(f, 2.0; Δt=0.001)
 0.07567799367991235
 ```
 
-Wanneer we kleinere stapjes nemen neemt het verschil $f(t+\Delta t) - f(t)$ af maar we delen ook door een kleiner getal. Voor steeds kleinere waarden van $\Delta t$ convergeren we naar de echte afgeleide.
+Wanneer we kleinere stapjes nemen neemt het verschil $f(t+\Delta t) - f(t)$ af maar we delen ook door een kleiner getal. Voor steeds kleinere waarden van $\Delta t$ convergeren we naar de echte afgeleide die we met een beetje calculus kunnen bepalen als $\sin(5) + 5 \cos(5)\approx 0.4593$.
 
 - [ ] add plot fin diff
 
+
+De wiskundige notatie voor de afgeleide, $\frac{\text{d}f(t)}{\text{d}t}$, is een hele boterham om op te schrijven. Vanaf hier zullen we een simplere notatie gebruiken:
+
+$$
+\dot{f}(t) = \frac{\text{d}f(t)}{\text{d}t}\,,
+$$
+
+waar het puntje op de functie duidt op de afgeleide naar de tijd.
+
+
 ## Continue groei met differentiaalvergelijkingen
 
-- groei van luizen
-- logistische groei NOOT: verschil logistisch model
+Aan de hand van de afgeleide van een functie kunnen we de verandering in de tijd berekenen. Wanneer we iets willen modelleren is dit extreem nuttig, want vaak is het handiger om de verandering te beschrijven in plaats van de grootheid zelf. Neem een luizenpopulatie. Wat is de grootte van hun populatie ($y(t)$) op elk moment? Dit is moeilijk te zeggen. Waar we wel iets over kunnen zeggen is de *groei*, de verandering van de populatie doorheen de tijd: $\dot{y}(t)$. Hier nemen volgend model aan:
 
 $$
 \dot{y} = ry(1-y/K)
 $$
- 
-evenwicht is 0 (geen luizen aanwezig) of R (vol).
 
-merk op dat het model helemaal anders is dan log  model vorig hoofdstuk. Daar gave de formule de populattiegroote, hier de groei
-wnn y=R stopt hier de populatie met groeien, voordien stortte ze in
+Dit ziet er bekend uit, het is immers terug de logistische functie[^logistic]! We veronderstellen opnieuw een groeisnelheid $r$, uitgedrukt in luizen per dag en een draagkracht van het systeem $K$, uitgedrukt in luizen. Wanneer de luizenpopulatie leeg is ($y=0$) is er geen groei ($\dot{y}=0$), net zoals wanneer de populatiegrootte gelijk is aan de draagkracht ($y=K$). Groei is pas mogelijk wanneer je een positieve luizenpopulatie is onder de draagkracht. Wanneer de grootte de draagkracht overstijgt is er negatieve groei, de populatie sterft uit. Hier nemen we als parameterwaarden $r=0.6$ en $K=10000$.
+
+[^logistic]: Merk op dat ons model hier helemaal anders ineensteekt dan het logistisch model van het vorig hoofdstuk. Toen gaf de logistische vergelijking een transformatie weer van de ene toestand (populatiegrootte) naar de andere, hier beschrijft het de groei.
+
+- [ ] add plot log
+
+
+Meer algemeen wordt een eenvoudige differentiaalvergelijing beschreven als:
 
 $$
-\dot{y} = f(y,t)
+\dot{y} = f(y,t)\,,
 $$
 
-- remove $t$ -> *autonome*
-
-
-
-> De kracht van differentiaalvergelijkingen om de realiteit te beschrijven via massabalans
+de afgeleide van de functie wordt beschreven door een andere functie $f(y,t)$ die kan afhangen van de zowel de toestand $y$ (bv. groei werd beïnvloed door de populatiegrootte) en de tijd. In ons voorbeeld hadden we geen tijdsafhankelijkheid, maar indien bijvoorbeeld de groeisnelheid zou afhangen van de peroide in het jaar zou je dit kunnen toevoegen. Zonder tijdsafhankelijkheid spreken van een *autonome* differentiaalvergelijking.
 
 ## Stapsgewijs oplossen van de differentiaalvergelijking met Euler
+
+De meeste differentiaalvegelijkingen kunnen we niet wiskundig oplossen. Als we echter kijken naar onze benadering van de afgeleide, kunnen we echter wel een methode uitvinden om deze op te lossen. We merken op dat de standaardvorm van een differentiaalvergelijking ongeveer gelijk is aan:
 
 $$
 \frac{y(t+\Delta t) - y(t)}{\Delta t} \approx f(t, y)
 $$
 
+Als we bovenstaande verglijking wat omvormen bekomen we onderstaande formule:
+
 $$
 y(t+\Delta t) \approx y(t) + \Delta t \times f(t, y)
 $$
+
+Bovenstaande is erg nuttig! Als we de waarde voor $y(t)$ weten kunnen we een goede gok doen voor $y(t+\Delta t)$. Deze gok zal opnieuw beter worden als we een kleine stapgrootte voor $\Delta t$ nemen. Gezien we altijd een initiële waarde $y(t_0)$ nodig hebben. De formule laat ons toe stapje per stapje de oplossing $y(t)$ voor het hele tijdsinterval op te bouwen.
 
 ```julia
 julia> Δt = 0.2
@@ -128,17 +185,18 @@ julia> y = y + Δt * f(y)
 945.5012972611945
 ```
 
-# TODO: verfijn dit
+Het is natuurlijk niet zo praktisch om dit stapje per stapje in te voeren. Daarom zullen we dit in een functie gieten. 
 
 ```julia
 function euler(f,        # funtie met de afgeleide
-            y₀,          # initiele waarde op t₀
+            y₀,          # initiële waarde op t₀
             (t₀, tₑ);    # start- en eindtijd
-            Δt=0.2)      # stapgrootte
+            Δt=0.1)      # stapgrootte
     ts = t₀:Δt:tₑ  # de tijdstappen
+    n_stappen = length(ts)
     ys = [y₀]  # lijst met de functiewaarden
-    for t in t₀:Δt:(tₑ-Δt)
-        yₜ = last(ys)  # neem de vorige (laatste) waarde)
+    for stap in 2:n_stappen
+        t, yₜ = t[stap], ys[stap]  # neem de vorige (laatste) waarde)
         yₜ₊₁ = yₜ + Δt * f(yₜ)  # bereken volgende stap
         push!(ys, yₜ₊₁)  # voeg deze toe aan de lijst
     end
@@ -146,20 +204,21 @@ function euler(f,        # funtie met de afgeleide
 end
 ```
 
+We zien dat we alle inputs geven, `f` de functie, de initële waarde `y₀`, het tijds interval `(t₀, tₑ)` en de stapgrootte `Δt` als woordargument. De functie maakt eerst een lijst `ts` aan met de tijdstappen en vervolgens een lijst `ys` met de toestanden. De laatste bevat oorspronkelijk enkel de startwaarde, welke aangevuld wordt voor de volgende tijdstappen aan de hand van een for-lus. Final geeft de functie de berekende `ts` en `ys` weer.
+
 - plot hier de tijdreeks
+
+Hier zien we de groei van de bladluizen populatie doorheen de tijd. + UITLEG
 
 ## Prooien en predatoren: Lotka-Volterra
 
-- We kunnen de groei van de bladluizenpopulatie nu beschrijven. Deze groeit tot hun draagcapaciteit.
-- Om te voorkomen dat onze hele tuin leegegegeten worden voegen we hongerige lieveheersbeestjes toe die jagen op de luizen. 
-- Gezien we twee variabelen opvolgen spreken we dan van een *stelsel van differentiaalvegrelijkingen*.
-- Analoog met voordien is de algemene vorm
+Prima. We weten nu hoe snel de bladluizen groeien. Wat doen we er aan? Om te voorkomen dat onze hele tuin leegegegeten worden voegen we hongerige lieveheersbeestjes toe die jagen op de luizen. We houden dus twee variabelen bij: de bladluizen en de lieveheersbeestjes. Gezien we twee variabelen opvolgen spreken we dan van een *stelsel van differentiaalvegrelijkingen*. Analoog met het vorige werken we met de volgende algemene vorm:
 
 $$
 \dot{\mathbf{y}} = f(\mathbf{y},t)\,
 $$
 
-waar we $\mathbf{y}$ en $\dot{\mathbf{y}}$ in het vet schrijven omdat het *vectoren* zijn. Een vector is een lijst met meerdere getallen[^vector], hier twee: de populatiegrootte van de luizen en lieveheersbeestjes, respectievelijk. 
+waar we $\mathbf{y}$ en $\dot{\mathbf{y}}$ in het vet schrijven omdat het *vectoren* zijn. Een vector is een lijst met meerdere getallen[^vector], hier twee: de populatiegrootte van de luizen en lieveheersbeestjes, respectievelijk.
 
 ```julia
 julia> [1, 4]  # een vector maak je met vierkante haakjes, de elementen gescheiden door een komma
@@ -213,6 +272,8 @@ Doe tijdstapje in terminal
 toon oscillaties
 
 ## De insecten voorbij
+
+> De kracht van differentiaalvergelijkingen om de realiteit te beschrijven via massabalans
 
 Newton, dingen in heel kleine deeltjes te verdelen en te sommeren, Newton, archimedes die het gebruikte om de oppervlakte van een cirkel te berekenen
 twee voorbeelden: op basis van de hoogte vs spiesjes ? leidt te ver? Misschien gewoon de Riemannsom `rieman(f, (l, b), dx=(b-o)/100) = sum(f, o:dx:b) * dx`
