@@ -8,7 +8,7 @@ Ecologen bestuderen hoe levende organismen interageren met andere levende organi
 
 Vele insecten zijn nuttig, maar velen zijn ook ook plagen die de planten opvreten. Zo is de rups van de buxusmot (*Cydalima perspectalis*) een nachtmerrie voor elke tuinier met een mooie Buxshaag. De buxusmot is een invasieve soort in Europa met een grote economische cost. 
 
-![Rupsen van de buxus mot vernietigen een plantenhaag.](https://upload.wikimedia.org/wikipedia/commons/9/95/Box_tree_moth_larval_feeding_damage.jpg)
+![Rupsen van de buxus mot vernietigen een plantenhaag.](figures/logisticmap/Box_tree_moth_larval_feeding_damage.jpeg)
 
 Omdat deze rups zo schadelijk is, zijn ecologen en gewasbeschermers erg geïnteresseerd om de de groei van populaties op te volgen en te modeleren. Wiskundige modellen helpen hen in te schatten of de populatie tot een aanvaardbare grootte blijft of wanneer ze dreigt uit haar voegen te treden en bestrijding nodig is. 
 
@@ -51,8 +51,8 @@ waar $r> 0$ is de *groeiparameter* is.
 
 We kunnen deze regel eenvoudig in computercode voorstellen als
 
-```julia
-m(x; r) = r * x
+```jl
+sc("m(x; r) = r * x")
 ```
 
 De groeiparameter $r$ stelt het gemiddeld aantal nakomelingen per rups voor. We werken met gemiddelden, dus kommagetallen zoals 0.2 en 3.1 zijn toegestaan maar negatieve getallen houden geen steek.
@@ -71,41 +71,39 @@ waar `m` een functie is die de regel ("map") implementeert.
 
 Laat ons eens experimenteren. Je kan dit in een Python of Julia terminal doen, of gewoon met een rekenmachine. We zetten $r=1.8$, dus elke rups leidt gemiddeld gezien tot iets minder dan twee nieuwe rupsen per generatie.
 
-```julia
-r = 1.8
+```jl
+sc("r = 1.8")
 ```
 
 We moeten nu enkel nog een initiële $x_0$ zetten, de populatiegrootte op $t=0$. We beginnen met een bescheiden populatie van vijf rupsen.
 
-```
-x₀ = 5
+```jl
+sc("x₀ = 5")
 ```
 
  We passen de functie `m` toe: 
 
-```julia
-julia> x₁ = m(x₀; r)
-9.0
+```jl
+sco("x₁ = m(x₀; r)")
 ```
 
 Zoals verwacht zien we net geen verdubbeling van de populatie. Om nog een generatie verder te gaan passen we ofwel de functie één keer toe op `x₁`of twee keer op `x₀`
 
-```julia
-julia> x₂ = m(x₁; r)
-16.2
-
-julia> m(m(x₀; r); r)  # zelfde resultaat
-16.2
+```jl
+sco("x₂ = m(x₁; r)")
+```
+of, hetzelfde op een andere manier:
+```jl
+sco("m(m(x₀; r); r)")
 ```
 
 We kunnen zo verder naar de derde en vierde generatie gaan...
 
-```julia
-julia> x₃ = m(x₂; r)
-29.16
-
-julia> x₄ = m(x₃; r)
-52.488
+```jl
+sco("x₃ = m(x₂; r)")
+```
+```jl
+sco("x₄ = m(x₃; r)")
 ```
 
 We zien dat na vier generaties, de populatie al meer dan tien keer zo groot geworden is. 
@@ -118,35 +116,37 @@ $$
 
 Aangezien dit een exponentiële functie is wordt dit groeimodel dus *exponentiële groei* genoemd. De implementatie is eenvoudig:
 
-```julia
-pop_exp(x₀, t; r) = x₀ * r^t
+```jl
+sc("pop_exp(x₀, t; r) = x₀ * r^t")
 ```
 
 We zien dat deze hetzelfde resultaat geeft als voordien[^code]:
 
-```julia
-julia> pop_exp.(x₀, 0:4; r)
-5-element Vector{Float64}:
-  5.0
-  9.0
- 16.200000000000003
- 29.160000000000004
- 52.488
+```jl
+sco("pop_exp.(x₀, 0:4; r)")
  ```
 
 [^code]: Deze lijn code is wat moeilijker dan wat we tot nu toe gezien hebben. het `0:4` genereert een reeks generaties van 0 tot 4 in stappen van 1. We willen een lijst (`Vector`) aanmaken dit voor elke generatie die grootte berekent. Door een `.` na de functie en voor de haakjes te plaatsen zal de functie voor elke generatie toegepast worden. Een equalente manier is om `[pop_exp(x₀, t; r) for t in 0:4]` te lopen. Dit is ongeveer hoe je het in de Python taal zo doen.
 
 Laat ons een figuur maken voor tien generaties.
 
-![Exponentiële groei na tien generaties.](../figures/logisticmap/exp_10g.png)]
+```jl
+LogisticMap.growth_curve_exp(0:10, x₀, r)
+```
 
-De plaag groeit erg snel, dit is verontrustend. Wat als we nog verder inde tijd kijken.
+De plaag groeit erg snel, dit is verontrustend. Wat als we nog verder in de tijd kijken.
 
-![Exponentiële groei na 50 generaties.](../figures/logisticmap/exp_50g.png)]
+```jl
+LogisticMap.growth_curve_exp(0:50, x₀, r)
+```
 
 Oei. We zien dat de populatiegrootte groeit zonder enige belemmering. Na 50 generaties zijn er meer dan 29000000000000 rupsen. Als we aannemen dat één rups ongeveer 3 gram weegt hebben we na 50 generaties meer dan 87 miljoen ton rupsen, ofwel 40 mijoen nijlpaarden. Er zijn bijlange niet genoeg Buxushagen in de wereld om dergelijke populaties te bekomen!
 
-In de praktijk heeft elk ecosystem een bepaalde *draagkracht*, de hoeveelheid voedsel, water, ruimte die voorhanden is om een bepaalde populatie te ondersteuenen/. Onze rupsenpopulatie is geimiteerd door het aantal planten die beschikbaar zijn als voedsel. De draagkracht wordt vaak voorgesteld door de letter $K$. Laat ons aannemen dat $K=1000$. Onze tuin heeft genoeg Buxussen om 1000 rupsen te voeden en geen meer. Kunnen we de regel uitbreiden om hier rekening mee te houden?
+In de praktijk heeft elk ecosystem een bepaalde *draagkracht*, de hoeveelheid voedsel, water, ruimte die voorhanden is om een bepaalde populatie te ondersteuenen. Onze rupsenpopulatie is geimiteerd door het aantal planten die beschikbaar zijn als voedsel. De draagkracht wordt vaak voorgesteld door de letter $K$. Laat ons aannemen dat $K=1000$. Onze tuin heeft genoeg Buxussen om 1000 rupsen te voeden en geen meer. Kunnen we de regel uitbreiden om hier rekening mee te houden?
+
+```jl
+K = 1000;
+```
 
 ## Logistische groei
 
@@ -166,36 +166,43 @@ $$
 
 In code is dit eenvoudigweg
 
-```julia
-σ(x; r, K) = r * (1 - x / K) * x
+```jl
+sc("σ(x; r=r, K=1000) = r * (1 - x / K) * x")
 ```
 
-Laat ons opnieuw enkele stappen van de logisitische groei simuleren. Herinner je $r=1.8$ en $K=1000$.
+Laat ons opnieuw enkele stappen van de logistische groei simuleren. Herinner je $r=1.8$ en $K=1000$.
 
-```julia
-julia> x₀ = 5
-5
 
-julia> x₁ = σ(x₀; r, K)
-8.955
 
-julia> x₂ = σ(x₁; r, K)
-15.974654355
+```jl
+sco("x₀ = 5")
+```
 
-julia> x₃ = σ(x₂; r, K)
-28.295036591828904
+```jl
+sco("x₁ = σ(x₀; r)")
+```
 
-julia> x₄ = σ(x₃; r, K)
-49.48996949297275
+```jl
+sco("x₂ = σ(x₁; r)")
+```
+
+```jl
+sco("x₃ = σ(x₂; r)")
+```
+
+```jl
+sco("x₄ = σ(x₃; r)")
 ```
 
 Vergelijk met de resulaten van de exponentiele groei, wat merk je op? De groei ziet er gelijkaardig uit, waarbij de logistische groei iets trager is. Dit komt omdat we na vier stappen nog erg ver van de draagkracht zitten: $49.49 / 1000 \approx 5\%$. Laat ons even over een langer tijdsinterval kijken.
 
-![Logistische groei voor 50 generaties.](../figures/logisticmap/log_50g_conv.png)
+```jl
+LogisticMap.growth_curve_log(50, x₀, r, K)
+```
 
 Hier zien we een kwalitatief verschil met de exponentiele groei! In plaats van ongelimiteerd door te groeien begint de groei na ongeveer zeven generaties te temperen. Vanaf generatie 12 is de populatiegrootte stabiel op ongeveer 444 rupsen. Merk op dat dit flink minder is dan de draagkracht van het systeem!
 
-De grootte waarnaar geconveergeerd wordt heet de *evernwichtswaarde*. We zullen dit noteren met $x\_text{eq}$ ("eq" staat voor *equilibrium*). Als op dat moment de polatie stabiel is, moet houden dat
+De grootte waarnaar geconveergeerd wordt heet de *evernwichtswaarde*. We zullen dit noteren met $x_\text{eq}$ ("eq" staat voor *equilibrium*). Als op dat moment de polatie stabiel is, moet houden dat
 
 $$x_\text{eq} = r\left(1-\frac{x_\text{eq}}{K}\right)x_\text{eq}\,.$$
 
@@ -209,33 +216,45 @@ een kwadratische vergelijking van de vorm $ax^2+bx+c=0$. Een beetje rekenen geef
 - Ten eerste, $x_\text{eq}=0$, een triviale oplossing. Indien er geen rupsen zijn zal de populatie ook leeg blijven. Dit evenwicht is echter *onstabiel*. Een enkele rups in het systeem kan de populatie op gang brengen.
 - Het tweede evenwichtspunt is $x_\text{eq}=K\frac{r-1}{r}$, welke we zien op de plot. Dit is stabiel (voor deze groeisnelheid!), gezien we van verschillende startwaarden kunnen vertrekken en altijd op hetzelfde uitkomen.
 
-![Logistische groei voor 50 generaties met verschillende startwaarden.](../figures/logisticmap/log_starts_conv.png)
+```jl
+LogisticMap.plot_populations([x₀, 100, 500, 800], 50; r, K)
+```
 
 ## Schommelingen in de populatie
 
 Wat als we andere waarden nemen voor de groeisnelheid? Indien we $r=3.34$ zien we een compleet ander gedrag. 
 
-![](../figures/logisticmap/log_50g_osc2.png)
+```jl
+LogisticMap.growth_curve_log(50, x₀, 3.34, K)
+```
 
 We zien dat de populatie niet convergeert naar een $x_\text{eq}$ maar een *periodiek* gedrag vertoont. De ene generatie is de populatiegrootte minder dan verwacht bij evenwicht, de volgende generatie terug meer enzovoort. Hier zien we dat de populatiegrootte zich elke twee generaties herhaalt, dit noemen we een periode van twee.
 
 Indien we $r$ nog een ietsiepietsie vergroten naar 3.455 kunnen we een periode van vier waarnemen. 
 
-![](../figures/logisticmap/log_50g_osc4.png)
+```jl
+LogisticMap.growth_curve_log(50, x₀, 3.455, K)
+```
 
 ## Een wispelturige populatie
 
 Logistische groei lijkt niet zo gecompliceerd. Ofwel lijken we te convergeren naar een vaste waarde $x_\text{eq}=K\frac{r-1}{r}$, ofwel gaat de populatie op en neer volgens een regelmatig patroon. Blijft deze makkelijk te voorspellen? Een groeisnelheid van $r=3.6$ leert ons van niet.
 
-![](../figures/logisticmap/log_50g_chaos.png)
+```jl
+LogisticMap.growth_curve_log(50, x₀, 3.6, K)
+```
 
 Hier gaat de populatie op en neer maar zonder enige regelmaat. Soms lijkt het alsof de grootte voor een tijdje gewoon terug oscilleert om dan plots het patroon te doorbreken. Wat als we verschillende startwaarden nemen?
 
-![](../figures/logisticmap/log_starts_chaos.png)
+```jl
+LogisticMap.plot_populations([x₀, 100, 500, 800], 50; r=3.6, K)
+```
 
 Hier zien we helemaal het omgekeerde van een convergentie: de tijdsreeksen zijn compleet verschillend. Logisch denk je misschien, want ze zijn allemaal op compleet verschillende plaatsen begonnen. Wat als we de reeksen beginnen, maar met slechts een piepklein beetje verschil? Dus we starten van $x_0=4.998, 4.999, 5, 5.001, 5.002$. Hier zou je verwachten dat de reeksen ongeveer syncroon lopen.
 
-![](../figures/logisticmap/log_starts_chaos_tiny.png)
+```jl
+LogisticMap.plot_populations((x₀-3e-3):1e-3:(x₀+3e-3), 50; r=3.6, K)
+```
 
 De reeksen met verschillende startwaarden lopen inderdaad samen. Voor ongeveer 20 generaties. Daarna lopen de tijdreeksen weer helemaal verschillend.
 
@@ -247,27 +266,36 @@ Voor bepaalde waarden van de groeisnelheid worden heel kleine verschillen in de 
 
 We zien dat de waarde van $r$ een sterke invloed uitoefend op het gedrag van de logistische groei. Een nieuwe soort figuur verschaft ons beter inzicht in wat er nu eigenlijhk gebeurt. We plotten op de x-as $x_{t-1}$ en op de y-as $x_t$ zodat we zien hoe de grootte verspringt van populate tot populatie. We beginnen met $r=1.8$, het eenvoudig convergerend gedrag.
 
-![](../figures/logisticmap/log_spiderweb_conv.png)
+```jl
+LogisticMap.plot_logistic(x₀, r, K, show_spiderweb=true)
+```
 
 Merk op dat we twee hulplijnen getekend hebben. De eerste is de logistische vergelijking $\sigma(x) = r(1-x/K)x$, het tweede de eerste bissectrice die het vlak in twee snijdt. De laatste is nuttig omdat $x_t$ van de ene generatie de $x_{t-1}$ van de volgende generatie is. Door de evolutie van de populatie als een trap tussen deze twee curves voor te stellen zien we hier hoe de populatie naar het snijpunt tussen de curves convergeert. Dit snijpunt is natuurlijk de evenwichtspopulatie. Dit soort plot wordt soms poetisch een *spinnewebdiagram* genoemd.
 
-Wanneer we naar $r=34$ zien we dat de rode lijnperfect symmetrisch terugketst tussen de logistische vergelijking. We krijgen daardoor de oscillaties die we eerder waarnemen.
+Wanneer we naar $r=3.4$ zien we dat de rode lijnperfect symmetrisch terugketst tussen de logistische vergelijking. We krijgen daardoor de oscillaties die we eerder waarnemen.
 
-![](../figures/logisticmap/log_spiderweb_osc.png)
+```jl
+LogisticMap.plot_logistic(x₀, 3.4, K, show_spiderweb=true)
+```
 
 Het chaotisch regime met $r=3.6$ ziet er als volgt uit.
 
-![](../figures/logisticmap/log_spiderweb_chaos.png)
+```jl
+LogisticMap.plot_logistic(x₀, 3.6, K, show_spiderweb=true)
+```
 
 De vorm van de logistische verlijking is nu een beetje anders waardoor de bissectrice na de top komt. Soms verspringt de lijn voor en na de top, wat verklaart waarom het gedrag zo onvoorspelbaar is.
 
 Wat als we kijken naar **alle** waarden voor de groeisnelheid $r$? Dit kunnen we doen aan de hand van een *bifurcatieplot*. Wat we doen is voor elke waarde van $r$ van 0 tot 4 de logistische vergelijking toepassen voor een groot aantal stappen (hier 100) op een startwaarde. 
 
-![](../figures/logisticmap/log_bifurcation_diagram.png)
+```jl
+LogisticMap.bifurcation_plot(K)
+```
 
 Hierop kan je onmiddellijk zien welke eindwaarden mogelijk zijn voor bepaalde waarden van $r$. 
 
 Zo zien we
+
 - voor $0<r<1$ is geen groei mogelijk, de populatie sterf uit;
 - voor $1\le r < 3$ zien we convergentie naar $x_\text{eq}$;
 - voor $3\le r < 4$ wordt het interessanter! We zien eerst een splitsing (een bifurcatie!) in twee. Dit is een periodieke reeks met periode 2. Voor hogere waarden gaat de periode naar vier om uiteindelijk naar een chaotisch regime over te gaan.
@@ -281,14 +309,12 @@ Groeimodellen vind je overal, niet enkel om de evolutie van insectenpopulaties t
 
 De logisitische vergelijking is enorm belangrijk, niet omdat ze zo biologisch realistisch is, maar omdat het één van de simpelste manieren is om een chaotische reeks te genereren. Chaostheorie, de wetenschap dat kleine oorzaken grote, onverwachte gevolgen kunnen hebben, is een relatief jonge tak van de wiskunde. Ze kon pas bloeien in de twintigste eeuw toen computers het mogelijk maakten om snel computationele experimenten uit te voeren, zoals we hier gedaan hebben. Eén van de pioniers in dit veld was de weerkundige Edward Lorenz. Terwijl hij experimenteerde met een eenvoudig weermodel rondde hij de getallen af van zes naar drie cijfers om de berekeningen sneller te laten lopen. Tot de grote schok van de wetenschappelijke gemeenschap die tot dan toe slechts in een triviale afrondingsfout zou resulteren gaf dit compleet andere uitkomsten. Tegenwoordig is het algemeen aanvaard dat systemen zoals het weer (en de stromingen van vloeistoffen in het algemeen) chaotisch zijn. Dit maakt het zo goed als onmogelijk om het weer nauwkeurig te voorspellen meer dan een week in de toekomst.
 
-![](https://upload.wikimedia.org/wikipedia/commons/thumb/f/fe/Airplane_vortex_edit.jpg/1920px-Airplane_vortex_edit.jpg)
+![Chaos in vloeistofstromen.](figures/logisticmap/Airplane_vortex_edit.jpeg)
 
 Het model van Lorenz is zo iconisch dat we hier even willen tonen. Het beschrijft een trajectory in een driedimentionele ruimte. De drie dimensies stellen elk een weerkundig/e variable voor. Dit traject lijkt wat op een een vlinder, waarbij het punt dat dit traject volgt schijnbaar willekeurig beslist om van de ene naar de andere vleugel te verspringen. Misschien was het deze figuur die Lorenz inspireerde om te stellen dat een vleugelslag van een vlindertje mogelijks tot een orkaan kan leiden aan de andere kant van de wereld.
 
 
-![](https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Lorenz_attractor_yb.svg/1920px-Lorenz_attractor_yb.svg.png)
-
-- [ ] figure lorenz attractor
+![De Lorenzcurve: het schoolvoorbeeld van een chaotisch systeem.](figures/logisticmap/lorenz.png)
 
 Deze bovenstaande Lorenz attractor is geen discreet model zoals we in dit hoofdstuk besproken hebben maar een stelsel van differentiaalvergelijkingen. Differntiaalvergelijkingen stellen verandingen in de tijd voor en komen alomtegenwoordig voor om natuurlijke fenomenen te beschrijven. Het is het onderwerp van het volgende hoofdstuk.
 
@@ -298,6 +324,6 @@ Deze bovenstaande Lorenz attractor is geen discreet model zoals we in dit hoofds
 2. Exponentiële groei wordt vaak voorgesteld door de formule $x_t=x_0e^{at}$ met $a$ een nieuwe groeiparameter. Kan je het verband tussen $a$ en $r$ vinden?
 3. Kan je op basis van $r$ in de exponentiële groei een formule vinden voor de verdubbelingstijd, dit is het aantal generaties nodig om de populatiegrootte te verdubbelen?
 4. naast de logistische mapping zijn er nog andere maps. Probeer je die even uit?
-   - de cosinus map $x_t = \cos(x_{t-1})$ (in code: `tent(x) = cos(x)`);
+   - de cosinus map $x_t = \cos(x_{t-1})$ (in code: `cos(x)`);
    - de tent map $x_t = \min(x_{t-1}, 1-x_{t-1})$ (in code: `tent(x) = min(x, 1-x)`);
    - Gauss map $x_t = \exp(-\alpha (x_{t-1})^2) +\beta)$ (in code: `gauss(x; α, β) = exp(α * x^2) + β`).

@@ -1,0 +1,25 @@
+---
+title: Het Programmeer-Insectenboekje
+subtitle: Ik zoek nog een betere titel!
+author:
+  - Michiel Stock
+
+html-license: <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a>
+tex-license: Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International
+
+# bibliography: files/bibliography.bib
+
+# Only used in PDF.
+titlepage-top: >
+  \begin{tabular}{l}
+  Michiel Stock\\
+  Example institute 1\\
+  \\
+  Example author 2\\
+  Example institute 2\\
+  \\
+  \end{tabular}
+
+titlepage-bottom: >
+  Het Insecten-Programmeer Boekje
+---

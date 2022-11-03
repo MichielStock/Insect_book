@@ -1,4 +1,10 @@
 module InsectBook
+    export LogisticMap
+
+
+    include("logisticmap.jl")
+
+   
 
     export myblue, mygreen, myyellow, myorange, myred, myblack, mycolors
 
