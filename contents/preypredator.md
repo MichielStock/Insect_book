@@ -26,23 +26,26 @@ $$
 
 wat we makkelijk in code kunnen omzetten:
 
-```
-julia> f(t) = t * sin(t)
-f (generic function with 1 method)
-```
+```jl
+sc("f(t) = t * sin(t)")
 
 ```
-julia> f(5)
--4.794621373315692
+
+```jl
+sco("f(5)")
 ```
 
 Hier is een plot van deze functie:
 
-- [ ] add plot  continuous line
+```jl
+pf = plot(f, 0, 10, label="f(x)", xlabel="x")
+```
 
 We zien hier een mooie doorlopende lijn, maar dit is echter schijn. Onze computer kan slechts één punt tergelijkertijd evalueren. Wat je ziet is een groot maar eindig aantal punten dat de computer berekend en de plotter verbindt met een vloeiende lijn. De volgende figuur staat wat dichter bij de werkelijkheid:
 
-- [ ] add scatter plot
+```jl
+scatter(0:0.25:10, f.(0:.25:10), label="f(x)", xlabel="x")
+```
 
 Hier zien we dezelfde functie, maar we plotten slechts elke 0.2 tijdstappen een evaluatie. We duiden de tijdstappen aan met $\Delta t$ =0.2, waar het symbool $\Delta$ vaak gebruikt wordt om een verschil aan te duiden.
 
@@ -78,34 +81,33 @@ We zien hier dat de afgeleide op $t=5$ erg klein is. Als we terugkijken naar de 
 
 De formule die we hier gebruikten om de afgeleide te bepalen wordt de *eindige differentie methode* genoemd. Ze is zeer eenvoudig te implementeren.
 
-```
-eindige_differentie(f, t; Δt=0.01) = (f(t + Δt) - f(t)) / Δt
+```jl
+sc("eindige_differentie(f, t; Δt=0.01) = (f(t + Δt) - f(t)) / Δt")
 ```
 
 We hebben `Δt` als een parameter gekozen die we kunnen aanpassen.
 
-```
-julia> eindige_differentie(f, 2.0; Δt=0.1)
--0.05855183688728616
+```jl
+sco("eindige_differentie(f, 2.0; Δt=0.1)")
 ```
 
 Wat als we een kleinere waarde voor $\Delta t$ nemen?
 
-```
-julia> eindige_differentie(f, 2.0; Δt=0.01)
-0.06371786322902917
+```jl
+sco("eindige_differentie(f, 2.0; Δt=0.01)")
 ```
 
 En nog kleiner?
 
-```
-julia> eindige_differentie(f, 2.0; Δt=0.001)
-0.07567799367991235
+```jl
+sco("eindige_differentie(f, 2.0; Δt=0.001)")
 ```
 
 Wanneer we kleinere stapjes nemen neemt het verschil $f(t+\Delta t) - f(t)$ af maar we delen ook door een kleiner getal. Voor steeds kleinere waarden van $\Delta t$ convergeren we naar de echte afgeleide die we met een beetje calculus kunnen bepalen als $\sin(5) + 5 \cos(5)\approx 0.4593$.
 
-- [ ] add plot fin diff
+```jl
+plot!(pf, t->eindige_differentie(f, t; Δt=0.001), 0, 10, label="benaderde afgeleide")
+```
 
 
 De wiskundige notatie voor de afgeleide, $\frac{\text{d}f(t)}{\text{d}t}$, is een hele boterham om op te schrijven. Vanaf hier zullen we een simplere notatie gebruiken:
@@ -127,9 +129,16 @@ $$
 
 Dit ziet er bekend uit, het is immers terug de logistische functie[^logistic]! We veronderstellen opnieuw een groeisnelheid $r$, uitgedrukt in luizen per dag en een draagkracht van het systeem $K$, uitgedrukt in luizen. Wanneer de luizenpopulatie leeg is ($y=0$) is er geen groei ($\dot{y}=0$), net zoals wanneer de populatiegrootte gelijk is aan de draagkracht ($y=K$). Groei is pas mogelijk wanneer je een positieve luizenpopulatie is onder de draagkracht. Wanneer de grootte de draagkracht overstijgt is er negatieve groei, de populatie sterft uit. Hier nemen we als parameterwaarden $r=0.6$ en $K=10000$.
 
+```jl
+sc("σ(y;  r=0.6, K=10_000) = r * y * (1- y / K)")
+```
+
+
 [^logistic]: Merk op dat ons model hier helemaal anders ineensteekt dan het logistisch model van het vorig hoofdstuk. Toen gaf de logistische vergelijking een transformatie weer van de ene toestand (populatiegrootte) naar de andere, hier beschrijft het de groei.
 
-- [ ] add plot log
+```jl
+plot(σ, 0, 11_000, label="Groei", xlabel="y (luizenpopulatie)")
+```
 
 
 Meer algemeen wordt een eenvoudige differentiaalvergelijing beschreven als:
@@ -155,6 +164,9 @@ y(t+\Delta t) \approx y(t) + \Delta t \times f(t, y)
 $$
 
 Bovenstaande is erg nuttig! Als we de waarde voor $y(t)$ weten kunnen we een goede gok doen voor $y(t+\Delta t)$. Deze gok zal opnieuw beter worden als we een kleine stapgrootte voor $\Delta t$ nemen. Gezien we altijd een initiële waarde $y(t_0)$ nodig hebben. De formule laat ons toe stapje per stapje de oplossing $y(t)$ voor het hele tijdsinterval op te bouwen.
+
+
+
 
 ```julia
 julia> Δt = 0.2
@@ -187,26 +199,34 @@ julia> y = y + Δt * f(y)
 
 Het is natuurlijk niet zo praktisch om dit stapje per stapje in te voeren. Daarom zullen we dit in een functie gieten. 
 
-```julia
+```jl
+sc("""
 function euler(f,        # funtie met de afgeleide
             y₀,          # initiële waarde op t₀
             (t₀, tₑ);    # start- en eindtijd
             Δt=0.1)      # stapgrootte
     ts = t₀:Δt:tₑ  # de tijdstappen
-    n_stappen = length(ts)
+    n_stappen = length(ts) - 1
     ys = [y₀]  # lijst met de functiewaarden
-    for stap in 2:n_stappen
-        t, yₜ = t[stap], ys[stap]  # neem de vorige (laatste) waarde)
+    for stap in 1:n_stappen
+        t, yₜ = ts[stap], ys[stap]  # neem de vorige (laatste) waarde)
         yₜ₊₁ = yₜ + Δt * f(yₜ)  # bereken volgende stap
         push!(ys, yₜ₊₁)  # voeg deze toe aan de lijst
     end
     return ts, ys
 end
+""")
 ```
 
 We zien dat we alle inputs geven, `f` de functie, de initële waarde `y₀`, het tijds interval `(t₀, tₑ)` en de stapgrootte `Δt` als woordargument. De functie maakt eerst een lijst `ts` aan met de tijdstappen en vervolgens een lijst `ys` met de toestanden. De laatste bevat oorspronkelijk enkel de startwaarde, welke aangevuld wordt voor de volgende tijdstappen aan de hand van een for-lus. Final geeft de functie de berekende `ts` en `ys` weer.
 
-- plot hier de tijdreeks
+```jl
+sco("ts, ys = euler(σ, 500.0, (0, 10), Δt=0.25)")
+```
+
+```jl
+scatter(ts, ys, label="luizenpopulatie", xlabel="tijd (dagen)")
+```
 
 Hier zien we de groei van de bladluizen populatie doorheen de tijd. + UITLEG
 
@@ -220,11 +240,8 @@ $$
 
 waar we $\mathbf{y}$ en $\dot{\mathbf{y}}$ in het vet schrijven omdat het *vectoren* zijn. Een vector is een lijst met meerdere getallen[^vector], hier twee: de populatiegrootte van de luizen en lieveheersbeestjes, respectievelijk.
 
-```julia
-julia> [1, 4]  # een vector maak je met vierkante haakjes, de elementen gescheiden door een komma
-2-element Vector{Int64}:
- 1
- 4
+```jl
+sco("[1, 4]  # een vector maak je met vierkante haakjes, de elementen gescheiden door een komma")
 ```
 
 [^vector]: In dit boekje hebben we het voornamelijk over computercode en beschouwen we een vector als een lijst met getallen. De mooie wiskundige definitie is dat een vector een ding is met een magnitude en een richting. Vaak wordt dit voorgesteld door een pijltje, met de lengte de magnitude en de richting ... de richting. Bijvoorbeeld, vector $\mathbf{a} = (1, -1)$ wijst naar rechtsonder en heeft een magnitude van $\sqrt{1^2+(-1)^2}=\sqrt{2}$.

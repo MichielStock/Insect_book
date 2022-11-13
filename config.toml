@@ -4,6 +4,7 @@
   contents = [
     "about",
     "logisticmap",
+    "preypredator",
   ]
 
   # Full URL, required for the sitemap and robots.txt.
